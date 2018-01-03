@@ -3,20 +3,13 @@
 import pygame
 import random
 import os
+from settings import *
 
-WIDTH = 800
-HEIGHT = 600
-FPS = 50
-
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-CYAN = (0, 255, 255)
-PURPLE = (255, 0, 255)
-DARKPURPLE = (51, 0, 51)
+pygame.init() # starts the game
+pygame.mixer.init() # used for sound and music
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Screen Scroller")
+clock = pygame.time.Clock()
 
 #set up assests folders
 game_folder = os.path.dirname(__file__)
@@ -40,12 +33,6 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top < 200:
             self.y_speed = 5
 
-
-pygame.init() # starts the game
-pygame.mixer.init() # used for sound and music
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Screen Scroller")
-clock = pygame.time.Clock()
 
 all_sprites = pygame.sprite.Group()
 player = Player()
