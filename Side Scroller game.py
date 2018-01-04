@@ -1,54 +1,70 @@
 # Pygame template for new games
 
-import pygame
+import pygame as pg
 import random
 import os
 from settings import *
+from Sprites import *
 
-pygame.init() # starts the game
-pygame.mixer.init() # used for sound and music
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Screen Scroller")
-clock = pygame.time.Clock()
-
-#set up assests folders
-game_folder = os.path.dirname(__file__)
-img_folder = os.path.join(game_folder, "img")
-
-class Player(pygame.sprite.Sprite):
+class Game:
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(img_folder, "p1_walk04.png")).convert()
-        self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH / 2, HEIGHT / 2)
-        self.y_speed = 5
+        #initializes game window
+        pg.init()  # starts the game
+        pg.mixer.init()  # used for sound and music
+        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        pg.display.set_caption("Screen Scroller")
+        self.clock = pg.time.Clock()
+        self.running = True
+
+    def new(self):
+        #Start a new game
+        self.all_sprites = pg.sprite.Group()
+        self.player = Player()
+        self.all_sprites.add(Player)
+        self.run()
+
+    def run(self):
+        #Game Loop
+        self.playing = True
+        while self.playing:
+            self.clock.tick(FPS)
+            self.events()
+            self.update()
+            self.draw()
+
 
     def update(self):
-        self.rect.x += 5
-        self.rect.y += self.y_speed
-        if self.rect.left > WIDTH:
-            self.rect.right = 0
-        if self.rect.bottom > HEIGHT - 200:
-            self.y_speed = -5
-        if self.rect.top < 200:
-            self.y_speed = 5
+        #Game Loop - Update
+        self.all_sprites.update()
+
+    def events(self):
+        #Game Loop - events
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                if self.playing:
+                    self.playing = False
+                self.running = False
+
+    def draw(self):
+        #Game Loop - Draw
+        self.screen.fill(BLACK)
+        self.all_sprites.draw(self.screen)
+        pg.display.flip()
+
+    def show_start_screen(self):
+        #Game start menu
+        pass
+
+    def show_go_screen(self):
+        #Gameover screen
+        pass
 
 
-all_sprites = pygame.sprite.Group()
-player = Player()
-all_sprites.add(player)
+g = Game()
+g.show_start_screen()
 
-#Game loop
-running = True
-while running:
-    clock.tick(FPS)
-    #Process input (events)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-    #Update
-    all_sprites.update()
-    #Draw / render
-    screen.fill(BLACK)
-    all_sprites.draw(screen)
-    pygame.display.flip()
+while g.running:
+    g.new()
+    g.show_go_screen()
+
+pg.quit()
