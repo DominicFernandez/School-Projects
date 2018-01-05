@@ -37,7 +37,7 @@ class Game:
         self.player = Player(self)
         self.all_sprites.add(self.player)
         for plat in PLATFORM_LIST:
-            p = Platform(*plat)
+            p = Platform(self, *plat)
             self.all_sprites.add(p)
             self.platforms.add(p)
 
@@ -63,18 +63,17 @@ class Game:
 
 #       srcreen scroller
         if self.player.rect.top <= HEIGHT / 4:
-            self.player.pos.y += abs(self.player.vel.y)
+            self.player.pos.y += max(abs(self.player.vel.y), 5)
             for plat in self.platforms:
-                plat.rect.y += abs(self.player.vel.y)
+                plat.rect.y += max(abs(self.player.vel.y), 5)
                 if plat.rect.top >= HEIGHT:
                     plat.kill()
                     self.score += 1
 
-        while len(self.platforms) < 6:
+        while len(self.platforms) < 5:
             pwidth = random.randrange(50, 100)
-            p = Platform(random.randrange(0, WIDTH - pwidth),
-                         random.randrange(-45, -35),
-                         pwidth, 20, GREEN)
+            p = Platform(self, random.randrange(0, WIDTH - pwidth),
+                         random.randrange(-75, -30))
             self.platforms.add(p)
             self.all_sprites.add(p)
         #DEATH
@@ -103,6 +102,7 @@ class Game:
         #Game Loop - Draw
         self.screen.fill(BG_COLOR)
         self.all_sprites.draw(self.screen)
+        self.screen.blit(self.player.image, self.player.rect)
         self.text(str(self.score), 24, BLACK, WIDTH / 2, 20)
         pg.display.flip()
 
