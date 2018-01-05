@@ -3,6 +3,7 @@ WIDTH = 480
 HEIGHT = 600
 FPS = 60
 FONT_NAME = 'comics sans ms'
+HS_FILE = "high score.txt"
 
 #player prop
 PLAYER_ACC = 0.5
