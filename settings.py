@@ -4,6 +4,7 @@ HEIGHT = 600
 FPS = 60
 FONT_NAME = 'comics sans ms'
 HS_FILE = "high score.txt"
+SPRITESHEET = "spritesheet_jumper.png"
 
 #player prop
 PLAYER_ACC = 0.5
