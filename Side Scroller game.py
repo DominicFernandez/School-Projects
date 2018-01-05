@@ -19,9 +19,8 @@ class Game:
         self.load_data()
 
     def load_data(self):
-
         self.dir = path.dirname(__file__)
-        with open(path.join(self.dir, HS_FILE), 'w') as f:  # 'w' creates and reads and writes a file
+        with open(path.join(self.dir, HS_FILE), 'r+') as f:  # 'r+' creates and reads and writes a file
             try:
                 self.highscore = int(f.read())
             except:
