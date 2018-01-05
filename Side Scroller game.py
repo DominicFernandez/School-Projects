@@ -21,12 +21,10 @@ class Game:
         self.platforms = pg.sprite.Group()
         self.player = Player(self)
         self.all_sprites.add(self.player)
-        p1 = Platform(0, HEIGHT - 40, WIDTH, 40)
-        self.all_sprites.add(p1)
-        self.platforms.add(p1)
-        p2 = Platform(WIDTH / 2 - 50, HEIGHT * 3/4, 100, 20)
-        self.all_sprites.add(p2)
-        self.platforms.add(p2)
+        for plat in PLATFORM_LIST:
+            p = Platform(*plat)
+            self.all_sprites.add(p)
+            self.platforms.add(p)
 
         self.run()
 
@@ -47,6 +45,23 @@ class Game:
             if hits:
                 self.player.pos.y = hits[0].rect.top
                 self.player.vel.y = 0
+
+#       srcreen scroller
+        if self.player.rect.top <= HEIGHT / 4:
+            self.player.pos.y += abs(self.player.vel.y)
+            for plat in self.platforms:
+                plat.rect.y += abs(self.player.vel.y)
+                if plat.rect.top >= HEIGHT:
+                    plat.kill()
+
+        while len(self.platforms) < 6:
+            pwidth = random.randrange(50, 100)
+            p = Platform(random.randrange(0, WIDTH - pwidth),
+                         random.randrange(-45, -35),
+                         pwidth, 20)
+            self.platforms.add(p)
+            self.all_sprites.add(p)
+
 
     def events(self):
         #Game Loop - events

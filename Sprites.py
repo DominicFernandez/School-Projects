@@ -22,14 +22,14 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 1
         if hits:
-            self.vel.y = -20
+            self.vel.y = -PLAYER_JUMP
 
     def update(self):
         self.acc = vec(0, PLAYER_GRAV)
         keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT]:
+        if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
-        if keys[pg.K_RIGHT]:
+        if keys[pg.K_d]:
             self.acc.x = PLAYER_ACC
 
         self.acc.x += self.vel.x * PLAYER_FRICTION
