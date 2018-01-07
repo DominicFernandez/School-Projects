@@ -2,7 +2,7 @@
 WIDTH = 480
 HEIGHT = 600
 FPS = 60
-FONT_NAME = 'comics sans ms'
+FONT_NAME = 'Comic Sans MS'
 HS_FILE = "high score.txt"
 SPRITESHEET = "spritesheet_jumper.png"
 
@@ -10,7 +10,7 @@ SPRITESHEET = "spritesheet_jumper.png"
 PLAYER_ACC = 0.5
 PLAYER_FRICTION = -0.12
 PLAYER_GRAV = 0.8
-PLAYER_JUMP = 22
+PLAYER_JUMP = 20
 
 #Colors
 WHITE = (255, 255, 255)
@@ -29,10 +29,10 @@ BROWN = (51, 25, 0)
 BG_COLOR = BLUEGREEN
 
 #Starting Platforms
-PLATFORM_LIST = [(0, HEIGHT - 35, WIDTH, 15, GREEN),
-                 (0, HEIGHT - 20, WIDTH, 25, BROWN),
-                 (WIDTH / 2 - 50, HEIGHT * 3 / 4, 100, 20, GREEN),
-                 (150, HEIGHT - 275, 50, 20, GREEN),
-                 (300, HEIGHT - 390, 100, 20, GREEN),
-                 (50, HEIGHT - 350, 100, 20, GREEN),
-                 (210, HEIGHT - 450, 100, 20, GREEN)]
+PLATFORM_LIST = [(0, HEIGHT - 35),
+                 (0, HEIGHT - 20),
+                 (WIDTH / 2 - 50, HEIGHT * 3 / 4),
+                 (150, HEIGHT - 27),
+                 (300, HEIGHT - 390),
+                 (50, HEIGHT - 350),
+                 (210, HEIGHT - 450)]
