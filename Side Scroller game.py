@@ -29,6 +29,12 @@ class Game:
 
         self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
 
+        #Load sound
+        self.snd_dir = path.join(self.dir, 'snd')
+        self.jump_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Jump10.wav'))
+        self.death_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Explosion4.wav'))
+        self.score_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Pickup_Coin4.wav'))
+
     def new(self):
         #Start a new game
         self.score = 0
@@ -40,17 +46,19 @@ class Game:
             p = Platform(self, *plat)
             self.all_sprites.add(p)
             self.platforms.add(p)
-
+        pg.mixer.music.load(path.join(self.snd_dir, 'wind.ogg'))
         self.run()
 
     def run(self):
         #Game Loop
+        pg.mixer.music.play(loops=-1)
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
+        pg.mixer.music.stop()
 
     def update(self):
         #Game Loop - Update
@@ -58,8 +66,14 @@ class Game:
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
-                self.player.pos.y = hits[0].rect.top
-                self.player.vel.y = 0
+                lowest = hits[0]
+                for hit in hits:
+                    if hit.rect.bottom > lowest.rect.bottom:
+                        lowest = hit
+                if self.player.pos.y < lowest.rect.centery:
+                    self.player.pos.y = hits[0].rect.top
+                    self.player.vel.y = 0
+                    self.player.jumping = False
 
 #       srcreen scroller
         if self.player.rect.top <= HEIGHT / 4:
@@ -73,7 +87,7 @@ class Game:
         while len(self.platforms) < 5:
             pwidth = random.randrange(50, 100)
             p = Platform(self, random.randrange(0, WIDTH - pwidth),
-                         random.randrange(-75, -30))
+                         random.randrange(-65, -30))
             self.platforms.add(p)
             self.all_sprites.add(p)
         #DEATH
@@ -82,9 +96,16 @@ class Game:
                 sprite.rect.y -= max(self.player.vel.y, 10)
                 if sprite.rect.bottom < 0:
                     sprite.kill()
+                    self.death_sound.play()
+
 
         if len(self.platforms) == 0:
             self.playing = False
+
+        #score sound
+        if self.score % 10 == 0 and self.score != 0:
+            self.score_sound.play()
+            self.score += 1
 
     def events(self):
         #Game Loop - events
@@ -97,6 +118,10 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump()
+
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_SPACE:
+                    self.player.jump_cut()
 
     def draw(self):
         #Game Loop - Draw
@@ -151,7 +176,7 @@ class Game:
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
-        self.screen.blit(text_surface,text_rect)
+        self.screen.blit(text_surface, text_rect)
 
 g = Game()
 g.show_start_screen()
