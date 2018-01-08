@@ -17,6 +17,7 @@ class Spritesheet:
         image = pg.transform.scale(image, (width // 2, height // 2))
         return image
 
+
 class Player(pg.sprite.Sprite):
     def __init__(self, game):
         self.groups = game.all_sprites
@@ -114,6 +115,7 @@ class Player(pg.sprite.Sprite):
                 self.image = self.standing_frames[self.current_frame]
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
+
 
 class Platform(pg.sprite.Sprite):
     def __init__(self, game, x, y):

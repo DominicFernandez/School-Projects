@@ -86,7 +86,7 @@ class Game:
         while len(self.platforms) < 5:
             pwidth = random.randrange(50, 100)
             Platform(self, random.randrange(0, WIDTH - pwidth),
-                    random.randrange(-55, -30))
+                    random.randrange(-35, -30))
         #DEATH
         if self.player.rect.bottom > HEIGHT:
             for sprite in self.all_sprites:

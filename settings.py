@@ -14,7 +14,7 @@ PLAYER_JUMP = 20
 
 #Boost settings
 BOOST_POWER = 75
-PPU_SPAWN_PCT = 20
+PPU_SPAWN_PCT = 10
 
 
 #Colors
