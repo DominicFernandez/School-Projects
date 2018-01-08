@@ -12,6 +12,11 @@ PLAYER_FRICTION = -0.12
 PLAYER_GRAV = 0.8
 PLAYER_JUMP = 20
 
+#Boost settings
+BOOST_POWER = 75
+PPU_SPAWN_PCT = 20
+
+
 #Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)

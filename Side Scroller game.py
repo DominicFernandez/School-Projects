@@ -40,12 +40,10 @@ class Game:
         self.score = 0
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
+        self.ppu = pg.sprite.Group()
         self.player = Player(self)
-        self.all_sprites.add(self.player)
         for plat in PLATFORM_LIST:
-            p = Platform(self, *plat)
-            self.all_sprites.add(p)
-            self.platforms.add(p)
+            Platform(self, *plat)
         pg.mixer.music.load(path.join(self.snd_dir, 'wind.ogg'))
         self.run()
 
@@ -70,10 +68,11 @@ class Game:
                 for hit in hits:
                     if hit.rect.bottom > lowest.rect.bottom:
                         lowest = hit
-                if self.player.pos.y < lowest.rect.centery:
-                    self.player.pos.y = hits[0].rect.top
-                    self.player.vel.y = 0
-                    self.player.jumping = False
+                if self.player.pos.x < lowest.rect.right + 10 and self.player.pos.x > lowest.rect.left - 10:
+                    if self.player.pos.y < lowest.rect.centery:
+                        self.player.pos.y = hits[0].rect.top
+                        self.player.vel.y = 0
+                        self.player.jumping = False
 
 #       srcreen scroller
         if self.player.rect.top <= HEIGHT / 4:
@@ -86,10 +85,8 @@ class Game:
 
         while len(self.platforms) < 5:
             pwidth = random.randrange(50, 100)
-            p = Platform(self, random.randrange(0, WIDTH - pwidth),
-                         random.randrange(-65, -30))
-            self.platforms.add(p)
-            self.all_sprites.add(p)
+            Platform(self, random.randrange(0, WIDTH - pwidth),
+                    random.randrange(-55, -30))
         #DEATH
         if self.player.rect.bottom > HEIGHT:
             for sprite in self.all_sprites:

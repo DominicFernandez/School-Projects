@@ -1,7 +1,7 @@
 #Sprites classes for game
 from settings import *
 import pygame as pg
-from random import choice
+from random import choice, randrange
 vec = pg.math.Vector2
 
 
@@ -19,7 +19,8 @@ class Spritesheet:
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game):
-        pg.sprite.Sprite.__init__(self)
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.walking = False
         self.jumping = False
@@ -116,7 +117,8 @@ class Player(pg.sprite.Sprite):
 
 class Platform(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        pg.sprite.Sprite.__init__(self)
+        self.groups = game.all_sprites, game.platforms
+        pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         images = [self.game.spritesheet.get_image(0, 96, 380, 94),
                   self.game.spritesheet.get_image(382, 406, 200, 100)]
@@ -125,3 +127,24 @@ class Platform(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        if randrange(100) < PPU_SPAWN_PCT:
+            Ppu(self.game, self)
+
+
+class Ppu(pg.sprite.Sprite):
+    def __init__(self, game, plat):
+        self.groups = game.all_sprites, game.ppu
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.plat = plat
+        self.type = choice(['boost'])
+        self.image = self.game.spritesheet.get_image(852, 1089, 65, 77)
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.plat.rect.centerx
+        self.rect.bottom = self.plat.rect.top - 5
+
+    def update(self):
+        self.rect.bottom = self.plat.rect.top - 5
+        if not self.game.platforms.has(self.plat):
+            self.kill()
