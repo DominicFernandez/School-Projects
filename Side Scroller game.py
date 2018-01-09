@@ -83,6 +83,13 @@ class Game:
                     plat.kill()
                     self.score += 1
 
+        #PPU hit
+        Ppu_hits = pg.sprite.spritecollide(self.player, self.ppu, True)
+        for ppu in Ppu_hits:
+            if ppu.type == 'boost':
+                self.player.vel.y = -BOOST_POWER
+                self.player.jumping = False
+
         while len(self.platforms) < 5:
             pwidth = random.randrange(50, 100)
             Platform(self, random.randrange(0, WIDTH - pwidth),
