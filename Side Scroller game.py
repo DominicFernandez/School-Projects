@@ -36,7 +36,9 @@ class Game:
 
         #Load sound
         self.snd_dir = path.join(self.dir, 'snd')
+
         self.jump_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Jump10.wav'))
+
         self.death_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Explosion4.wav'))
         self.score_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Pickup_Coin4.wav'))
 
@@ -53,6 +55,7 @@ class Game:
             Platform(self, *plat)
         self.mob_timer = 0
         pg.mixer.music.load(path.join(self.snd_dir, 'wind.ogg'))
+        pg.mixer.music.set_volume(0.1)
         for i in range(8):
             c = Cloud(self)
             c.rect.y += 580
@@ -213,6 +216,51 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
+
+
+#
+#
+#
+#
+
+
+#def menu_main():
+#
+#    menu_running = True
+#
+#    while menu_running
+
+
+#class ui_Slider:
+#
+#    def __init__(self, surface, size, center_cords):
+#
+#        self.surface = surface
+#        self.size = size
+#        self.bg_color = BG_COLOR
+#
+#        self.rect = pg.Rect((0, 0), size)
+#        self.rect.center = center_cords
+#
+#    def update(self, player_input):
+#
+#        mouse_down = pg.mouse.get_pressed()[0]
+#
+#        local_events, local_mousepos = player_input
+#        mouse_x, mouse_y = local_mousepos
+#
+#        mouse_over = (    mouse_x >= self.rect.left
+#                      and mouse_x <= self.rect.right
+#                      and mouse_y <= self.rect.top
+#                      and mouse_y <= self.rect.bottom)
+#
+#        print mouse_over
+#
+#    def draw(self):
+#
+#        pg.draw.rect(self.surface, self.bg_color, self.rect)
+
+
 
 g = Game()
 g.show_start_screen()
