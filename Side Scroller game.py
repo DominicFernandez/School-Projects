@@ -29,6 +29,11 @@ class Game:
 
         self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
 
+        #CLOUD IMG
+        self.cloud_images = []
+        for i in range(1, 4):
+            self.cloud_images.append(pg.image.load(path.join(img_dir, 'cloud{}.png'.format(i))).convert())
+
         #Load sound
         self.snd_dir = path.join(self.dir, 'snd')
         self.jump_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Jump10.wav'))
@@ -38,13 +43,19 @@ class Game:
     def new(self):
         #Start a new game
         self.score = 0
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.platforms = pg.sprite.Group()
         self.ppu = pg.sprite.Group()
+        self.enemies = pg.sprite.Group()
+        self.cloud = pg.sprite.Group()
         self.player = Player(self)
         for plat in PLATFORM_LIST:
             Platform(self, *plat)
+        self.mob_timer = 0
         pg.mixer.music.load(path.join(self.snd_dir, 'wind.ogg'))
+        for i in range(8):
+            c = Cloud(self)
+            c.rect.y += 580
         self.run()
 
     def run(self):
@@ -61,6 +72,20 @@ class Game:
     def update(self):
         #Game Loop - Update
         self.all_sprites.update()
+
+        #MOB SPAWNING
+        now = pg.time.get_ticks()
+        if now - self.mob_timer > 5000 + random.choice([-1000, -500, 0, 500, 1000]) and self.score > 25:
+            self.mob_timer = now
+            Enemy(self)
+
+        #ENEMY Collision
+        enemy_hits = pg.sprite.spritecollide(self.player, self.enemies, False, pg.sprite.collide_mask)
+        if enemy_hits:
+            self.death_sound.play()
+            self.playing = False
+
+
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
@@ -74,9 +99,16 @@ class Game:
                         self.player.vel.y = 0
                         self.player.jumping = False
 
-#       srcreen scroller
+#       screen scroller
         if self.player.rect.top <= HEIGHT / 4:
+            if random.randrange(100) < 10:
+                Cloud(self)
+            for cloud in self.cloud:
+                cloud.rect.y += max(abs(self.player.vel.y / random.randrange(2, 3)), 2)
+
             self.player.pos.y += max(abs(self.player.vel.y), 5)
+            for enemy in self.enemies:
+                enemy.rect.y += max(abs(self.player.vel.y), 5)
             for plat in self.platforms:
                 plat.rect.y += max(abs(self.player.vel.y), 5)
                 if plat.rect.top >= HEIGHT:
@@ -131,17 +163,16 @@ class Game:
         #Game Loop - Draw
         self.screen.fill(BG_COLOR)
         self.all_sprites.draw(self.screen)
-        self.screen.blit(self.player.image, self.player.rect)
         self.text(str(self.score), 24, BLACK, WIDTH / 2, 20)
         pg.display.flip()
 
     def show_start_screen(self):
         #Game start menu
         self.screen.fill(BG_COLOR)
-        self.text("Jump Man", 45, WHITE, WIDTH / 2, HEIGHT /4)
-        self.text("High Score: " + str(self.highscore), 22, WHITE, WIDTH / 2, HEIGHT * 2 / 5)
-        self.text("A, D, and SPACE to move", 22, WHITE, WIDTH / 2, HEIGHT / 2)
-        self.text("Press any key to start", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        self.text("Jump Man", 45, BLACK, WIDTH / 2, HEIGHT /4)
+        self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
+        self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2)
+        self.text("Press ENTER to start", 22, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
         pg.display.flip()
         self.key_wait()
 
@@ -150,16 +181,16 @@ class Game:
         if not self.running:
             return
         self.screen.fill(BG_COLOR)
-        self.text("GAME OVER", 45, WHITE, WIDTH / 2, HEIGHT / 4)
-        self.text("Score: " + str(self.score), 22, WHITE, WIDTH / 2, HEIGHT / 2)
-        self.text("Press any key to play again", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        self.text("GAME OVER", 45, BLACK, WIDTH / 2, HEIGHT / 4)
+        self.text("Score: " + str(self.score), 22, BLACK, WIDTH / 2, HEIGHT / 2)
+        self.text("Press ENTER to play again", 22, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
         if self.score > self.highscore:
             self.highscore = self.score
-            self.text("NEW HIGH SCORE!", 30, WHITE, WIDTH / 2, HEIGHT / 2 - 30)
+            self.text("NEW HIGH SCORE!", 30, BLACK, WIDTH / 2, HEIGHT / 2 - 30)
             with open(path.join(self.dir, HS_FILE), 'w') as f:
                 f.write(str(self.highscore))
         else:
-            self.text("High Score: " + str(self.highscore), 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
+            self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT / 2 + 40)
 
         pg.display.flip()
         self.key_wait()
@@ -172,8 +203,9 @@ class Game:
                 if event.type == pg.QUIT:
                     waiting = False
                     self.running = False
-                if event.type == pg.KEYUP:
-                    waiting = False
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_RETURN:
+                        waiting = False
 
     def text(self, text, size, color, x, y):
         font = pg.font.Font(self.font_name, size)
