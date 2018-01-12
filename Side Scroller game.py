@@ -55,7 +55,7 @@ class Game:
             Platform(self, *plat)
         self.mob_timer = 0
         pg.mixer.music.load(path.join(self.snd_dir, 'wind.ogg'))
-        pg.mixer.music.set_volume(0.1)
+        pg.mixer.music.set_volume(0.3)
         for i in range(8):
             c = Cloud(self)
             c.rect.y += 580
@@ -172,7 +172,7 @@ class Game:
     def show_start_screen(self):
         #Game start menu
         self.screen.fill(BG_COLOR)
-        self.text("Jump Man", 45, BLACK, WIDTH / 2, HEIGHT /4)
+        self.text("Sky Stone", 45, BLACK, WIDTH / 2, HEIGHT /4)
         self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
         self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2)
         self.text("Press ENTER to start", 22, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
