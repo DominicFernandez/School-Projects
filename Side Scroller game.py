@@ -5,6 +5,7 @@ import random
 from settings import *
 from os import path
 
+main_menu = True
 
 class Game:
     def __init__(self):
@@ -88,7 +89,6 @@ class Game:
             self.death_sound.play()
             self.playing = False
 
-
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
@@ -169,15 +169,60 @@ class Game:
         self.text(str(self.score), 24, BLACK, WIDTH / 2, 20)
         pg.display.flip()
 
+    def button(self, msg, x, y, w, h, ic, ac, action=None):
+        global main_menu
+
+        mouse = pg.mouse.get_pos()
+        click = pg.mouse.get_pressed()
+
+        if x + 100 > mouse[0] > x and y + 50 > mouse[1] > y:
+            pg.draw.rect(self.screen, ac, (x, y, w, h))
+            if click[0] == 1 and action != None:
+                if action == "Play":
+                    main_menu = False
+                elif action == "Options":
+                    pass
+                elif action == "Quit":
+                    pg.quit()
+                    quit()
+        else:
+            pg.draw.rect(self.screen, ic, (x, y, w, h))
+
+        self.text(msg, 22, BLACK, (x + (w / 2)), (y + (h / 4)))
+
     def show_start_screen(self):
-        #Game start menu
-        self.screen.fill(BG_COLOR)
-        self.text("Sky Stone", 45, BLACK, WIDTH / 2, HEIGHT /4)
-        self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
-        self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2)
-        self.text("Press ENTER to start", 22, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
-        pg.display.flip()
-        self.key_wait()
+
+        global main_menu
+
+        while main_menu:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    self.running = False
+                    pg.quit()
+                    quit()
+#                if event.type == pg.KEYDOWN:
+#                    if event.key == pg.K_RETURN:
+#                        main_menu = False
+
+            #Game start menu
+            self.screen.fill(BG_COLOR)
+            self.text("Sky Stone", 45, BLACK, WIDTH / 2, HEIGHT /4)
+            self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
+            self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2)
+
+
+          # BUTTONS
+
+            #Play Button
+            self.button("Play", 190, 350, 100, 50, DARK_GREEN, GREEN, "Play")
+
+            # Options BUTTON
+            self.button("Options", 190, 400, 100, 50, DARK_YELLOW, YELLOW, "Options")
+
+            #Quit BUTTON
+            self.button("Quit", 190, 450, 100, 50, DARK_RED, RED, "Quit")
+
+            pg.display.flip()
 
     def show_go_screen(self):
         #Gameover screen
@@ -216,50 +261,6 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
-
-
-#
-#
-#
-#
-
-
-#def menu_main():
-#
-#    menu_running = True
-#
-#    while menu_running
-
-
-#class ui_Slider:
-#
-#    def __init__(self, surface, size, center_cords):
-#
-#        self.surface = surface
-#        self.size = size
-#        self.bg_color = BG_COLOR
-#
-#        self.rect = pg.Rect((0, 0), size)
-#        self.rect.center = center_cords
-#
-#    def update(self, player_input):
-#
-#        mouse_down = pg.mouse.get_pressed()[0]
-#
-#        local_events, local_mousepos = player_input
-#        mouse_x, mouse_y = local_mousepos
-#
-#        mouse_over = (    mouse_x >= self.rect.left
-#                      and mouse_x <= self.rect.right
-#                      and mouse_y <= self.rect.top
-#                      and mouse_y <= self.rect.bottom)
-#
-#        print mouse_over
-#
-#    def draw(self):
-#
-#        pg.draw.rect(self.surface, self.bg_color, self.rect)
-
 
 
 g = Game()

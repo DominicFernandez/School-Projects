@@ -179,7 +179,7 @@ class Ppu(pg.sprite.Sprite):
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, game):
-        self._layer = ENEMT_LAY
+        self._layer = ENEMY_LAY
         self.groups = game.all_sprites, game.enemies
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
