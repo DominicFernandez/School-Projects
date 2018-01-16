@@ -6,6 +6,7 @@ from settings import *
 from os import path
 
 main_menu = True
+game_over = True
 
 class Game:
     def __init__(self):
@@ -74,6 +75,7 @@ class Game:
         pg.mixer.music.stop()
 
     def update(self):
+        global game_over
         #Game Loop - Update
         self.all_sprites.update()
 
@@ -88,6 +90,7 @@ class Game:
         if enemy_hits:
             self.death_sound.play()
             self.playing = False
+            game_over = True
 
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
@@ -136,6 +139,7 @@ class Game:
                 if sprite.rect.bottom < 0:
                     sprite.kill()
                     self.death_sound.play()
+                    game_over = True
 
 
         if len(self.platforms) == 0:
@@ -171,6 +175,7 @@ class Game:
 
     def button(self, msg, x, y, w, h, ic, ac, action=None):
         global main_menu
+        global game_over
 
         mouse = pg.mouse.get_pos()
         click = pg.mouse.get_pressed()
@@ -182,9 +187,13 @@ class Game:
                     main_menu = False
                 elif action == "Options":
                     pass
+                elif action == "Play Again":
+                    game_over = False
+                    self.running = True
                 elif action == "Quit":
                     pg.quit()
                     quit()
+
         else:
             pg.draw.rect(self.screen, ic, (x, y, w, h))
 
@@ -200,48 +209,60 @@ class Game:
                     self.running = False
                     pg.quit()
                     quit()
-#                if event.type == pg.KEYDOWN:
-#                    if event.key == pg.K_RETURN:
-#                        main_menu = False
 
-            #Game start menu
+            # Game start menu
             self.screen.fill(BG_COLOR)
             self.text("Sky Stone", 45, BLACK, WIDTH / 2, HEIGHT /4)
             self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
             self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2)
 
 
-          # BUTTONS
+            # BUTTONS
 
-            #Play Button
+            # Play Button
             self.button("Play", 190, 350, 100, 50, DARK_GREEN, GREEN, "Play")
 
             # Options BUTTON
-            self.button("Options", 190, 400, 100, 50, DARK_YELLOW, YELLOW, "Options")
+            self.button("Options", 190, 410, 100, 50, DARK_YELLOW, YELLOW, "Options")
 
-            #Quit BUTTON
-            self.button("Quit", 190, 450, 100, 50, DARK_RED, RED, "Quit")
+            # Quit BUTTON
+            self.button("Quit", 190, 470, 100, 50, DARK_RED, RED, "Quit")
 
             pg.display.flip()
 
     def show_go_screen(self):
-        #Gameover screen
-        if not self.running:
-            return
-        self.screen.fill(BG_COLOR)
-        self.text("GAME OVER", 45, BLACK, WIDTH / 2, HEIGHT / 4)
-        self.text("Score: " + str(self.score), 22, BLACK, WIDTH / 2, HEIGHT / 2)
-        self.text("Press ENTER to play again", 22, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
-        if self.score > self.highscore:
-            self.highscore = self.score
-            self.text("NEW HIGH SCORE!", 30, BLACK, WIDTH / 2, HEIGHT / 2 - 30)
-            with open(path.join(self.dir, HS_FILE), 'w') as f:
-                f.write(str(self.highscore))
-        else:
-            self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT / 2 + 40)
+        # Game over screen
+        global game_over
 
-        pg.display.flip()
-        self.key_wait()
+        while game_over:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    self.running = False
+                    pg.quit()
+                    quit()
+
+            if not self.running:
+                return
+
+            self.screen.fill(BG_COLOR)
+            self.text("GAME OVER", 45, BLACK, WIDTH / 2, HEIGHT / 4)
+            self.text("Score: " + str(self.score), 22, BLACK, WIDTH / 2, HEIGHT / 2)
+
+            # High score checker
+            if self.score > self.highscore:
+                self.highscore = self.score
+                self.text("NEW HIGH SCORE!", 30, BLACK, WIDTH / 2, HEIGHT / 2 - 30)
+                with open(path.join(self.dir, HS_FILE), 'w') as f:
+                    f.write(str(self.highscore))
+            else:
+                self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT / 2 + 40)
+
+            # Buttons
+            self.button("Play Again", 190, 400, 100, 50, DARK_GREEN, GREEN, "Play Again")
+            self.button("Quit", 190, 460, 100, 50, DARK_RED, RED, "Quit")
+
+            pg.display.flip()
+
 
     def key_wait(self):
         waiting = True
