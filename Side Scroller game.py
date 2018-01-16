@@ -8,6 +8,7 @@ from os import path
 main_menu = True
 game_over = True
 
+
 class Game:
     def __init__(self):
         #initializes game window
@@ -216,9 +217,7 @@ class Game:
             self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
             self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2)
 
-
             # BUTTONS
-
             # Play Button
             self.button("Play", 190, 350, 100, 50, DARK_GREEN, GREEN, "Play")
 
