@@ -4,16 +4,20 @@ import pygame as pg
 import random
 from settings import *
 from os import path
+import sys
 
 main_menu = True
 game_over = True
 
 
 class Game:
+
     def __init__(self):
         #initializes game window
         pg.init()  # starts the game
         pg.mixer.init()  # used for sound and music
+        self.snd_list = []
+        self.PREFERENCES = struc_Preferences()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption("Screen Scroller")
         self.clock = pg.time.Clock()
@@ -40,11 +44,12 @@ class Game:
         # Load sound
         self.snd_dir = path.join(self.dir, 'snd')
 
+        pg.mixer.music.load(path.join(self.snd_dir, 'wind.ogg'))
 
-        self.snd_list = []
         self.jump_sound = self.add_sound(path.join(self.snd_dir, 'Jump10.wav'))
         self.death_sound = self.add_sound(path.join(self.snd_dir, 'Explosion4.wav'))
         self.score_sound = self.add_sound(path.join(self.snd_dir, 'Pickup_Coin4.wav'))
+        self.adjust_sound()
 
     def add_sound(self, file_address):
 
@@ -53,6 +58,13 @@ class Game:
         self.snd_list.append(new_sound)
 
         return new_sound
+
+    def adjust_sound(self):
+
+        for sound in self.snd_list:
+            sound.set_volume(self.PREFERENCES.vol_effects)
+
+        pg.mixer.music.set_volume(self.PREFERENCES.vol_music)
 
     def new(self):
         #Start a new game
@@ -66,8 +78,6 @@ class Game:
         for plat in PLATFORM_LIST:
             Platform(self, *plat)
         self.mob_timer = 0
-        pg.mixer.music.load(path.join(self.snd_dir, 'wind.ogg'))
-        pg.mixer.music.set_volume(0.3)
         for i in range(8):
             c = Cloud(self)
             c.rect.y += 580
@@ -299,7 +309,7 @@ class Game:
 
         # SLIDER VARS #
         slider_x = WIDTH / 2
-        sound_effects_slider_y = 440
+        sound_effects_slider_y = 400
         sound_effect_vol = 0.5
 
 
@@ -320,7 +330,14 @@ class Game:
                                         (125, 15),
                                         (slider_x, sound_effects_slider_y),
                                         RED, GREEN,
-                                        .5)
+                                        self.PREFERENCES.vol_effects)
+
+        sound_music_slider = ui_slider(self.screen,
+                                        (125, 15),
+                                        (slider_x, sound_effects_slider_y + 50),
+                                        RED, GREEN,
+                                        self.PREFERENCES.vol_music)
+
         while not menu_close:
 
             list_of_events = pg.event.get()
@@ -333,11 +350,13 @@ class Game:
                 if event.type == pg.QUIT:
                     pg.quit()
                     self.running = False
+                    sys.exit()
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_ESCAPE:
                         menu_close = True
 
             sound_effect_slider.update(game_input)
+            sound_music_slider.update(game_input)
 
             settings_menu_surface.fill(settings_menu_bgcolor)
 
@@ -346,7 +365,23 @@ class Game:
             self.button("Save", 190, 500, 100, 50,
                         GRAY, GRAY, 22, "Save Options")
 
+            self.text("Music", 22, BLACK, 242, 412)
+
+            current_effects_vol = self.PREFERENCES.vol_effects
+            current_music_vol = self.PREFERENCES.vol_music
+
             sound_effect_slider.draw()
+            sound_music_slider.draw()
+
+            if current_effects_vol is not sound_effect_slider.current_val:
+                self.PREFERENCES.vol_effects = sound_effect_slider.current_val
+                self.adjust_sound()
+
+            if current_music_vol is not sound_music_slider.current_val:
+                self.PREFERENCES.vol_music = sound_music_slider.current_val
+                self.adjust_sound()
+
+
 
             pg.display.flip()
 
@@ -398,7 +433,12 @@ class ui_slider:
         pg.draw.rect(self.surface, BLACK, self.grip_tab)
 
 
+class struc_Preferences:
 
+    def __init__(self):
+
+        self.vol_effects = 0
+        self.vol_music = 0.01
 
 
 g = Game()
