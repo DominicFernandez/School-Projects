@@ -278,8 +278,9 @@ class Game:
                 self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT / 2 + 40)
 
             # Buttons
-            self.button("Play Again", 190, 400, 100, 50, GREEN, RED, 20, "Play Again")
-            self.button("Quit", 190, 460, 100, 50, GREEN, RED, 22, "Quit")
+            self.button("Play Again", 190, 400, 100, 50, GREEN, RED, 22, "Play Again")
+            self.button("Options", 190, 460, 100, 50, GREEN, RED, 22, "Options")
+            self.button("Quit", 190, 520, 100, 50, GREEN, RED, 22, "Quit")
 
             pg.display.flip()
 
@@ -342,20 +343,20 @@ class Game:
 
         while not menu_close:
 
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    self.running = False
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        menu_close = True
+
             list_of_events = pg.event.get()
             mouse_pos = pg.mouse.get_pos()
 
             game_input = (list_of_events, mouse_pos)
 
             # EXIT #
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    self.running = False
-                    sys.exit()
-                if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_ESCAPE:
-                        menu_close = True
 
             sound_effect_slider.update(game_input)
             sound_music_slider.update(game_input)
@@ -367,7 +368,9 @@ class Game:
             self.button("Save", 190, 500, 100, 50,
                         GRAY, LT_GRAY, 22, "Save Options")
 
-            self.text("Music", 22, BLACK, 242, 412)
+            self.text("Effects", 22, BLACK, 242, 378)
+
+            self.text("Music", 22, BLACK, 242, 428)
 
             current_effects_vol = self.PREFERENCES.vol_effects
             current_music_vol = self.PREFERENCES.vol_music
@@ -383,9 +386,8 @@ class Game:
                 self.PREFERENCES.vol_music = sound_music_slider.current_val
                 self.adjust_sound()
 
-
-
             pg.display.flip()
+        pg.display.flip()
 
 
 class ui_slider:
