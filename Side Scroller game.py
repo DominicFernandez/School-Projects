@@ -13,7 +13,7 @@ game_over = True
 class Game:
 
     def __init__(self):
-        #initializes game window
+        # initializes game window
         pg.init()  # starts the game
         pg.mixer.init()  # used for sound and music
         self.snd_list = []
@@ -210,6 +210,8 @@ class Game:
                 elif action == "Play Again":
                     game_over = False
                     self.running = True
+                elif action == "Save Options":
+                    main_menu = False
                 elif action == "Quit":
                     pg.quit()
                     quit()
@@ -363,7 +365,7 @@ class Game:
             self.screen.blit(settings_menu_surface, settings_menu_rect.topleft)
 
             self.button("Save", 190, 500, 100, 50,
-                        GRAY, GRAY, 22, "Save Options")
+                        GRAY, LT_GRAY, 22, "Save Options")
 
             self.text("Music", 22, BLACK, 242, 412)
 
