@@ -32,18 +32,27 @@ class Game:
 
         self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
 
-        #CLOUD IMG
+        # CLOUD IMG
         self.cloud_images = []
         for i in range(1, 4):
             self.cloud_images.append(pg.image.load(path.join(img_dir, 'cloud{}.png'.format(i))).convert())
 
-        #Load sound
+        # Load sound
         self.snd_dir = path.join(self.dir, 'snd')
 
-        self.jump_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Jump10.wav'))
 
-        self.death_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Explosion4.wav'))
-        self.score_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Pickup_Coin4.wav'))
+        self.snd_list = []
+        self.jump_sound = self.add_sound(path.join(self.snd_dir, 'Jump10.wav'))
+        self.death_sound = self.add_sound(path.join(self.snd_dir, 'Explosion4.wav'))
+        self.score_sound = self.add_sound(path.join(self.snd_dir, 'Pickup_Coin4.wav'))
+
+    def add_sound(self, file_address):
+
+        new_sound = pg.mixer.Sound(file_address)
+
+        self.snd_list.append(new_sound)
+
+        return new_sound
 
     def new(self):
         #Start a new game
@@ -174,7 +183,7 @@ class Game:
         self.text(str(self.score), 24, BLACK, WIDTH / 2, 20)
         pg.display.flip()
 
-    def button(self, msg, x, y, w, h, ic, ac, action=None):
+    def button(self, msg, x, y, w, h, ic, ac, size, action=None):
         global main_menu
         global game_over
 
@@ -187,7 +196,7 @@ class Game:
                 if action == "Play":
                     main_menu = False
                 elif action == "Options":
-                    pass
+                    self.menu_main_options()
                 elif action == "Play Again":
                     game_over = False
                     self.running = True
@@ -198,7 +207,7 @@ class Game:
         else:
             pg.draw.rect(self.screen, ic, (x, y, w, h))
 
-        self.text(msg, 22, BLACK, (x + (w / 2)), (y + (h / 4)))
+        self.text(msg, size, BLACK, (x + (w / 2)), (y + (h / 4)))
 
     def show_start_screen(self):
 
@@ -219,13 +228,13 @@ class Game:
 
             # BUTTONS
             # Play Button
-            self.button("Play", 190, 350, 100, 50, DARK_GREEN, GREEN, "Play")
+            self.button("Play", 190, 350, 100, 50, GREEN, RED, 22, "Play")
 
             # Options BUTTON
-            self.button("Options", 190, 410, 100, 50, DARK_YELLOW, YELLOW, "Options")
+            self.button("Options", 190, 410, 100, 50, GREEN, RED, 22, "Options")
 
             # Quit BUTTON
-            self.button("Quit", 190, 470, 100, 50, DARK_RED, RED, "Quit")
+            self.button("Quit", 190, 470, 100, 50, GREEN, RED, 22, "Quit")
 
             pg.display.flip()
 
@@ -257,11 +266,10 @@ class Game:
                 self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT / 2 + 40)
 
             # Buttons
-            self.button("Play Again", 190, 400, 100, 50, DARK_GREEN, GREEN, "Play Again")
-            self.button("Quit", 190, 460, 100, 50, DARK_RED, RED, "Quit")
+            self.button("Play Again", 190, 400, 100, 50, GREEN, RED, 20, "Play Again")
+            self.button("Quit", 190, 460, 100, 50, GREEN, RED, 22, "Quit")
 
             pg.display.flip()
-
 
     def key_wait(self):
         waiting = True
@@ -281,6 +289,116 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
+
+    def menu_main_options(self):
+
+        # MENU VARS #
+        setting_menu_width = 200
+        setting_menu_height = 200
+        settings_menu_bgcolor = GRAY
+
+        # SLIDER VARS #
+        slider_x = WIDTH / 2
+        sound_effects_slider_y = 440
+        sound_effect_vol = 0.5
+
+
+        window_center = (WIDTH / 2, HEIGHT / 2)
+
+        settings_menu_surface = pg.Surface((setting_menu_width,
+                                            setting_menu_height))
+
+        settings_menu_rect = pg.Rect(0,0,
+                                    setting_menu_width,
+                                    setting_menu_height - 300)
+
+        settings_menu_rect.center = window_center
+
+        menu_close = False
+
+        sound_effect_slider = ui_slider(self.screen,
+                                        (125, 15),
+                                        (slider_x, sound_effects_slider_y),
+                                        RED, GREEN,
+                                        .5)
+        while not menu_close:
+
+            list_of_events = pg.event.get()
+            mouse_pos = pg.mouse.get_pos()
+
+            game_input = (list_of_events, mouse_pos)
+
+            # EXIT #
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    self.running = False
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        menu_close = True
+
+            sound_effect_slider.update(game_input)
+
+            settings_menu_surface.fill(settings_menu_bgcolor)
+
+            self.screen.blit(settings_menu_surface, settings_menu_rect.topleft)
+
+            self.button("Save", 190, 500, 100, 50,
+                        GRAY, GRAY, 22, "Save Options")
+
+            sound_effect_slider.draw()
+
+            pg.display.flip()
+
+
+class ui_slider:
+
+    def __init__(self, surface, size, center_coords, bg_color, fg_color, parameter_value):
+
+        self.surface = surface
+        self.size = size
+        self.bg_color = bg_color
+        self.fg_color = fg_color
+        self.current_val = parameter_value
+
+        self.bg_rect = pg.Rect((0,0), size)
+        self.bg_rect.center = center_coords
+        self.fg_rect = pg.Rect((0, 0),
+                               (self.bg_rect.w * self.current_val, self.bg_rect.h))
+        self.fg_rect.topleft = self.bg_rect.topleft
+
+        self.grip_tab = pg.Rect((0, 0), (20, self.bg_rect.h + 4))
+        self.grip_tab.center = (self.fg_rect.right, self.bg_rect.centery)
+
+    def update(self, player_input):
+
+        mouse_down = pg.mouse.get_pressed()[0]
+
+        local_events, local_mousepos = player_input
+        mouse_x, mouse_y = local_mousepos
+
+        mouse_over = (mouse_x >= self.bg_rect.left
+                       and mouse_x <= self.bg_rect.right
+                       and mouse_y >= self.bg_rect.top
+                       and mouse_y <= self.bg_rect.bottom)
+
+        if mouse_down and mouse_over:
+            self.current_val = (float(float(mouse_x) - float(self.bg_rect.left)) / self.bg_rect.width)
+
+            self.fg_rect.width = self.bg_rect.width * self. current_val
+
+            self.grip_tab.center = (self.fg_rect.right, self.bg_rect.centery)
+
+    def draw(self):
+        # Draws background rect #
+        pg.draw.rect(self.surface, self.bg_color, self.bg_rect)
+        # Draws foreground rect #
+        pg.draw.rect(self.surface, self.fg_color, self.fg_rect)
+        # Draws slider tab #
+        pg.draw.rect(self.surface, BLACK, self.grip_tab)
+
+
+
 
 
 g = Game()
