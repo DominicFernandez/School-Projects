@@ -22,8 +22,8 @@ class Game:
         pg.display.set_caption("Screen Scroller")
         self.clock = pg.time.Clock()
         self.running = True
-        self.font_name = pg.font.match_font(FONT_NAME)
         self.load_data()
+        self.font_name = pg.font.match_font(FONT_NAME)
 
     def load_data(self):
         self.dir = path.dirname(__file__)
@@ -219,7 +219,7 @@ class Game:
         else:
             pg.draw.rect(self.screen, ic, (x, y, w, h))
 
-        self.text(msg, size, BLACK, (x + (w / 2)), (y + (h / 4)))
+        self.text(msg, size, BLACK, (x + (w / 2)), (y + (h * 1 / 3)))
 
     def show_start_screen(self):
 
@@ -254,6 +254,8 @@ class Game:
         # Game over screen
         global game_over
 
+        self.HS_checker()
+
         while game_over:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -268,17 +270,14 @@ class Game:
             self.text("GAME OVER", 45, BLACK, WIDTH / 2, HEIGHT / 4)
             self.text("Score: " + str(self.score), 22, BLACK, WIDTH / 2, HEIGHT / 2)
 
-            # High score checker
-            if self.score > self.highscore:
-                self.highscore = self.score
-                self.text("NEW HIGH SCORE!", 30, BLACK, WIDTH / 2, HEIGHT / 2 - 30)
-                with open(path.join(self.dir, HS_FILE), 'w') as f:
-                    f.write(str(self.highscore))
-            else:
+            if self.NHS == True:
+                self.text("NEW HIGH SCORE!", 30, BLACK, WIDTH / 2 + 5, HEIGHT / 2 + 40)
+
+            if self.NHS != True:
                 self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT / 2 + 40)
 
             # Buttons
-            self.button("Play Again", 190, 400, 100, 50, GREEN, RED, 22, "Play Again")
+            self.button("Play Again", 190, 400, 100, 50, GREEN, RED, 21, "Play Again")
             self.button("Options", 190, 460, 100, 50, GREEN, RED, 22, "Options")
             self.button("Quit", 190, 520, 100, 50, GREEN, RED, 22, "Quit")
 
@@ -313,8 +312,12 @@ class Game:
         # SLIDER VARS #
         slider_x = WIDTH / 2
         sound_effects_slider_y = 400
+        sound_music_slider_y = sound_effects_slider_y + 50
         sound_effect_vol = 0.5
 
+        text_y_offset = 26
+        effects_text_y = sound_effects_slider_y - text_y_offset
+        music_text_y = sound_music_slider_y - text_y_offset
 
         window_center = (WIDTH / 2, HEIGHT / 2)
 
@@ -337,7 +340,7 @@ class Game:
 
         sound_music_slider = ui_slider(self.screen,
                                         (125, 15),
-                                        (slider_x, sound_effects_slider_y + 50),
+                                        (slider_x, sound_music_slider_y),
                                         RED, GREEN,
                                         self.PREFERENCES.vol_music)
 
@@ -368,9 +371,9 @@ class Game:
             self.button("Save", 190, 500, 100, 50,
                         GRAY, LT_GRAY, 22, "Save Options")
 
-            self.text("Effects", 22, BLACK, 242, 378)
+            self.text("Effects", 22, BLACK, slider_x, effects_text_y)
 
-            self.text("Music", 22, BLACK, 242, 428)
+            self.text("Music", 22, BLACK, slider_x, music_text_y)
 
             current_effects_vol = self.PREFERENCES.vol_effects
             current_music_vol = self.PREFERENCES.vol_music
@@ -388,6 +391,18 @@ class Game:
 
             pg.display.flip()
         pg.display.flip()
+
+    def HS_checker(self):
+        # High score checker
+        if self.score > self.highscore:
+            self.highscore = self.score
+            self.NHS = True
+            with open(path.join(self.dir, HS_FILE), 'w') as f:
+                f.write(str(self.highscore))
+        else:
+            self.NHS = False
+
+
 
 
 class ui_slider:
@@ -441,8 +456,8 @@ class struc_Preferences:
 
     def __init__(self):
 
-        self.vol_effects = 0
-        self.vol_music = 0.01
+        self.vol_effects = 0.5
+        self.vol_music = 0.5
 
 
 g = Game()

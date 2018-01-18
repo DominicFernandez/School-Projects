@@ -2,8 +2,8 @@
 WIDTH = 480
 HEIGHT = 600
 FPS = 60
-FONT_NAME = 'Comic Sans MS'
-HS_FILE = "high score.txt"
+FONT_NAME = 'joystix'
+HS_FILE = "high_score.txt"
 SPRITESHEET = "spritesheet_jumper.png"
 
 #player prop
