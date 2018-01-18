@@ -28,7 +28,7 @@ class Game:
     def load_data(self):
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir, 'img')
-        with open(path.join(self.dir, HS_FILE), 'r+') as f:  # 'r+' creates and reads and writes a file
+        with open(path.join(self.dir, HS_FILE), 'r') as f:  # 'r+' creates and reads and writes a file
             try:
                 self.highscore = int(f.read())
             except:
@@ -411,10 +411,6 @@ class Game:
                 self.running = False
                 pg.quit()
                 quit()
-
-
-
-
 
 
 class ui_slider:
