@@ -402,6 +402,18 @@ class Game:
         else:
             self.NHS = False
 
+    def pause(self):
+
+        self.paused = True
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.running = False
+                pg.quit()
+                quit()
+
+
+
 
 
 
