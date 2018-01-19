@@ -1,9 +1,13 @@
-import cx_Freeze
+from cx_Freeze import setup, Executable
 
-executables = [cx_Freeze.Executable("Side Scroller game.py")]
+base = None
 
-cx_Freeze.setup(
+executables = [Executable("Side Scroller game.py", base=base)]
+
+setup(
     name="Jiggle Jump",
+
+
     options={"build_exe": {"packages" : ["pygame"],
                            "include_files": ["cloud1.png", "cloud2.png", "cloud3.png",
                                               "Soft Marshmallow.otf", "spritesheet_jumper.xml",

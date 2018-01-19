@@ -160,7 +160,7 @@ class Game:
             Platform(self, random.randrange(0, WIDTH - pwidth),
                     random.randrange(-35, -30))
         #DEATH
-        if self.player.rect.bottom > HEIGHT:
+        if self.player.rect.bottom > HEIGHT + 40:
             for sprite in self.all_sprites:
                 sprite.rect.y -= max(self.player.vel.y, 10)
                 if sprite.rect.bottom < 0:
