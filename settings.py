@@ -2,7 +2,7 @@
 WIDTH = 480
 HEIGHT = 600
 FPS = 60
-FONT_NAME = 'joystix'
+FONT_NAME = 'permanentmarker.ttf'
 HS_FILE = "high_score.txt"
 SPRITESHEET = "spritesheet_jumper.png"
 
@@ -51,7 +51,7 @@ BG_COLOR = BLUEGREEN
 #Starting Platforms
 PLATFORM_LIST = [(0, HEIGHT - 35),
                  (0, HEIGHT - 20),
-                 (WIDTH / 2 - 50, HEIGHT * 3 / 4),
+                 (WIDTH / 2 - 50, HEIGHT * 3 / 4 - 20),
                  (150, HEIGHT - 27),
                  (300, HEIGHT - 390),
                  (50, HEIGHT - 350),

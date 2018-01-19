@@ -19,15 +19,17 @@ class Game:
         self.snd_list = []
         self.PREFERENCES = struc_Preferences()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
-        pg.display.set_caption("Screen Scroller")
+        pg.display.set_caption("Jiggle Jump")
         self.clock = pg.time.Clock()
         self.running = True
         self.load_data()
-        self.font_name = pg.font.match_font(FONT_NAME)
 
     def load_data(self):
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir, 'img')
+        self.font_name = path.join(img_dir, 'Soft Marshmallow.otf')
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
         with open(path.join(self.dir, HS_FILE), 'r+') as f:  # 'r+' creates and reads and writes a file
             try:
                 self.highscore = int(f.read())
@@ -75,6 +77,7 @@ class Game:
         self.enemies = pg.sprite.Group()
         self.cloud = pg.sprite.Group()
         self.player = Player(self)
+        self.paused = False
         for plat in PLATFORM_LIST:
             Platform(self, *plat)
         self.mob_timer = 0
@@ -90,7 +93,11 @@ class Game:
         while self.playing:
             self.clock.tick(FPS)
             self.events()
-            self.update()
+            if not self.paused:
+                self.update()
+                pg.mixer.music.unpause()
+            if self.paused:
+                pg.mixer.music.pause()
             self.draw()
         pg.mixer.music.stop()
 
@@ -181,6 +188,9 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump()
+                if event.key == pg.K_ESCAPE and self.running == True and self.player.vel.x == 0 \
+                        and self.player.vel.y == 0:
+                    self.paused = not self.paused
 
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE:
@@ -190,7 +200,10 @@ class Game:
         #Game Loop - Draw
         self.screen.fill(BG_COLOR)
         self.all_sprites.draw(self.screen)
-        self.text(str(self.score), 24, BLACK, WIDTH / 2, 20)
+        self.text(str(self.score), 24, BLUE, WIDTH / 2, 20)
+        if self.paused:
+            self.screen.blit(self.dim_screen, (0, 0))
+            self.text("Paused", 90, CYAN, WIDTH / 2, HEIGHT / 2 - 40)
         pg.display.flip()
 
     def button(self, msg, x, y, w, h, ic, ac, size, action=None):
@@ -234,9 +247,10 @@ class Game:
 
             # Game start menu
             self.screen.fill(BG_COLOR)
-            self.text("Sky Stone", 45, BLACK, WIDTH / 2, HEIGHT /4)
+            self.text("Jiggle Jump", 45, BLACK, WIDTH / 2, HEIGHT /4)
             self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
-            self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2)
+            self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2 - 10)
+            self.text("Esc to pause/play and to go back", 22, BLACK, WIDTH / 2, HEIGHT / 2 + 20)
 
             # BUTTONS
             # Play Button
@@ -277,7 +291,7 @@ class Game:
                 self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT / 2 + 40)
 
             # Buttons
-            self.button("Play Again", 190, 400, 100, 50, GREEN, RED, 21, "Play Again")
+            self.button("Play Again", 190, 400, 100, 50, GREEN, RED, 18, "Play Again")
             self.button("Options", 190, 460, 100, 50, GREEN, RED, 22, "Options")
             self.button("Quit", 190, 520, 100, 50, GREEN, RED, 22, "Quit")
 
@@ -313,9 +327,8 @@ class Game:
         slider_x = WIDTH / 2
         sound_effects_slider_y = 400
         sound_music_slider_y = sound_effects_slider_y + 50
-        sound_effect_vol = 0.5
 
-        text_y_offset = 26
+        text_y_offset = 30
         effects_text_y = sound_effects_slider_y - text_y_offset
         music_text_y = sound_music_slider_y - text_y_offset
 
@@ -404,17 +417,11 @@ class Game:
 
     def pause(self):
 
-        self.paused = True
-
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
                 pg.quit()
                 quit()
-
-
-
-
 
 
 class ui_slider:
