@@ -247,7 +247,10 @@ class Game:
             # Game start menu
             self.screen.fill(BG_COLOR)
             self.text("Jiggle Jump", 45, BLACK, WIDTH / 2, HEIGHT /4)
-            self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
+            if self.highscore != 0:
+                self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
+            else:
+                self.text("Why Haven't You Played Yet", 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
             self.text("A, D, and SPACE to move", 22, BLACK, WIDTH / 2, HEIGHT / 2 - 10)
             self.text("Esc to pause/play and to go back", 22, BLACK, WIDTH / 2, HEIGHT / 2 + 20)
 
