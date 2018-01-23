@@ -107,7 +107,7 @@ class Game:
 
         #MOB SPAWNING
         now = pg.time.get_ticks()
-        if now - self.mob_timer > 5000 + random.choice([-1000, -500, 0, 500, 1000]) and self.score > 25:
+        if now - self.mob_timer > 5000 + random.choice([-1000, -500, 0, 500, 1000]) and self.score >= 25:
             self.mob_timer = now
             Enemy(self)
 
