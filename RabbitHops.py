@@ -1,4 +1,4 @@
- # Pygame template for new games
+# Pygame template for new games
 from Sprites import *
 import pygame as pg
 import random
@@ -18,7 +18,7 @@ class Game:
         self.snd_list = []
         self.PREFERENCES = struc_Preferences()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
-        pg.display.set_caption("Jiggle Jump")
+        pg.display.set_caption("Rabbit Hops")
         self.clock = pg.time.Clock()
         self.running = True
         self.load_data()
@@ -246,7 +246,7 @@ class Game:
 
             # Game start menu
             self.screen.fill(BG_COLOR)
-            self.text("Jiggle Jump", 45, BLACK, WIDTH / 2, HEIGHT /4)
+            self.text("Rabbit Hops", 45, BLACK, WIDTH / 2, HEIGHT /4)
             if self.highscore != 0:
                 self.text("High Score: " + str(self.highscore), 22, BLACK, WIDTH / 2, HEIGHT * 2 / 5)
             else:
